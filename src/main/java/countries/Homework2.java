@@ -3,10 +3,7 @@ package countries;
 import java.io.IOException;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.*;
 
@@ -81,7 +78,7 @@ public class Homework2 {
      * Returns whether there exists at least one capital that is a palindrome.
      */
     public boolean streamPipeline6() {
-        return countries.stream().anyMatch(country -> new StringBuilder(country.getCapital()).equals(new StringBuilder(country.getCapital()).reverse()));
+        return countries.stream().anyMatch(country -> new StringBuilder(country.getCapital().toLowerCase()).equals(new StringBuilder(country.getCapital().toLowerCase()).reverse()));
     }
 
     /**
@@ -95,14 +92,14 @@ public class Homework2 {
      *  Returns the capital with the most number of English vowels (i.e., {@code 'a'}, {@code 'e'}, {@code 'i'}, {@code 'o'}, {@code 'u'}).
      */
     public Optional<String> streamPipeline8() {
-        return countries.stream().map(country -> country.getName()).max(Comparator.comparing(name -> vowelCount(name.toLowerCase())));
+        return countries.stream().map(country -> country.getCapital()).max(Comparator.comparing(name -> vowelCount(name.toLowerCase())));
     }
 
     /**
      * Returns a map that contains for each character the number of occurrences in country names ignoring case.
      */
     public Map<Character, Long> streamPipeline9() {
-        return countries.stream().flatMap(country -> country.getName().chars().mapToObj(value -> (char) value)).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        return countries.stream().flatMap(country -> country.getName().toLowerCase().chars().mapToObj(value -> (char) value)).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
     /**
@@ -123,7 +120,7 @@ public class Homework2 {
      * Returns a map that contains the number of countries whose population is greater or equal than the population average versus the the number of number of countries with population below the average.
      */
     public Map<Boolean, Long> streamPipeline12() {
-        return countries.stream().filter(country -> country.getArea() != null).collect(Collectors.partitioningBy(country -> (double) country.getPopulation() / country.getArea().doubleValue() >= countries.stream().filter(value -> value.getArea() != null).mapToDouble(value -> (double) value.getPopulation() / value.getArea().doubleValue()).average().getAsDouble(), Collectors.counting()));
+        return countries.stream().collect(Collectors.partitioningBy(country -> country.getPopulation() >= countries.stream().mapToLong(value -> value.getPopulation()).average().getAsDouble(), Collectors.counting()));
     }
 
     /**
